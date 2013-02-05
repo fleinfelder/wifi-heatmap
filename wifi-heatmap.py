@@ -7,7 +7,7 @@ import matplotlib.pyplot as pp
 
 from mpl_toolkits.axes_grid1 import AxesGrid
 from scipy.interpolate import Rbf
-from pylab import imread, imshow
+from pylab import imread
 
 layout = imread('input/Layout.png')
 
@@ -37,6 +37,7 @@ levels = [-85, -80, -75, -70, -65, -60, -55, -50, -45, -40, -35, -30, -25]
 
 interpolate = True
 
+
 def add_inner_title(ax, title, loc, size=None, **kwargs):
     from matplotlib.offsetbox import AnchoredText
     from matplotlib.patheffects import withStroke
@@ -56,6 +57,7 @@ def add_inner_title(ax, title, loc, size=None, **kwargs):
 
     return at
 
+
 def grid_plots():
     f = pp.figure()
 
@@ -63,12 +65,12 @@ def grid_plots():
 
     # Adjust the margins and padding
     f.subplots_adjust(hspace=0.1, wspace=0.1, left=0.05, right=0.95, top=0.85,
-            bottom=0.15)
+                      bottom=0.15)
 
     # Create a grid of subplots using the AxesGrid helper
     image_grid = AxesGrid(f, 111, nrows_ncols=(2, 3), axes_pad=0.1,
-            label_mode="1", share_all=True, cbar_location="right",
-            cbar_mode="single", cbar_size="3%")
+                          label_mode="1", share_all=True, cbar_location="right",
+                          cbar_mode="single", cbar_size="3%")
 
     for beacon, i in zip(s_beacons, xrange(len(s_beacons))):
         # Hide the axis labels
@@ -78,17 +80,17 @@ def grid_plots():
         if interpolate:
             # Interpolate the data
             rbf = Rbf(a['Drawing X'], a['Drawing Y'], a[beacon],
-                    function='linear')
+                      function='linear')
 
             z = rbf(gx, gy)
             z = z.reshape((num_y, num_x))
 
             # Render the interpolated data to the plot
             image = image_grid[i].imshow(z, vmin=-85, vmax=-25, extent=(0,
-                image_width, image_height, 0), cmap='RdYlBu_r', alpha=1)
+                                                                        image_width, image_height, 0), cmap='RdYlBu_r', alpha=1)
 
-            #c = image_grid[i].contourf(z, levels, alpha=0.5)
-            #c = image_grid[i].contour(z, levels, linewidths=5, alpha=0.5)
+            # c = image_grid[i].contourf(z, levels, alpha=0.5)
+            # c = image_grid[i].contour(z, levels, linewidths=5, alpha=0.5)
         else:
             z = ml.griddata(a['Drawing X'], a['Drawing Y'], a[beacon], x, y)
 
@@ -108,6 +110,7 @@ def grid_plots():
 
     pp.show()
 
+
 def max_plot():
     # Get the maximum RSSI seen for each beacon
     max_rssi = [max(i) for i in a[s_beacons]]
@@ -123,10 +126,10 @@ def max_plot():
 
         # Render the interpolated data to the plot
         image = pp.imshow(z, vmin=-85, vmax=-25, extent=(0,
-            image_width, image_height, 0), cmap='RdYlBu_r', alpha=1)
+                                                         image_width, image_height, 0), cmap='RdYlBu_r', alpha=1)
 
-        #pp.contourf(z, levels, alpha=0.5)
-        #pp.contour(z, levels, linewidths=5, alpha=0.5)
+        # pp.contourf(z, levels, alpha=0.5)
+        # pp.contour(z, levels, linewidths=5, alpha=0.5)
     else:
         z = ml.griddata(a['Drawing X'], a['Drawing Y'], max_rssi, x, y)
 
