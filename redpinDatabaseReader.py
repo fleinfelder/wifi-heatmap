@@ -38,7 +38,11 @@ class dbAccess:
         return self.dbr.fetchAsArray(sql, assoc)
 
     def getDatasetForMap(self, mapId, assoc=False):
-        sql = "SELECT `mapXCord` AS x, `mapYCord` AS y, `rssi`, `bssid` FROM `wifireading` JOIN `readinginmeasurement` ON `readinginmeasurement`.`readingId`=`wifireading`.`wifireadingId` JOIN `measurement` USING(`measurementId`) JOIN `fingerprint` USING(`measurementId`) JOIN `location` USING(`locationId`) WHERE `mapId` = %d ORDER BY `locationId`" % mapId
+        sql = "SELECT `mapXCord` AS x, `mapYCord` AS y, `rssi`, `bssid` FROM `wifireading` JOIN `readinginmeasurement` ON `readinginmeasurement`.`readingId`=`wifireading`.`wifireadingId` JOIN `measurement` USING(`measurementId`) JOIN `fingerprint` USING(`measurementId`) JOIN `location` USING(`locationId`) WHERE `mapId` = %d AND `mapXCord` != 0 AND `mapYCord` != 0 ORDER BY `locationId`" % mapId
+        return self.dbr.fetchAsArray(sql, assoc)
+
+    def getFusedDatasetForMap(self, mapId, assoc=False):
+        sql = "SELECT COUNT(`rssi`) AS count, `mapXCord` AS x, `mapYCord` AS y, MIN(`rssi`) AS min, MAX(`rssi`) AS max, CAST(AVG(`rssi`) AS SIGNED) AS avg, STD(`rssi`) AS std_dev, VARIANCE(`rssi`) AS var, `bssid`, `measurementId` FROM `wifireading` JOIN `readinginmeasurement` ON `readinginmeasurement`.`readingId`=`wifireading`.`wifireadingId` JOIN `measurement` USING(`measurementId`) JOIN `fingerprint` USING(`measurementId`) JOIN `location` USING(`locationId`) WHERE `mapId` = %d AND `mapXCord` != 0 AND `mapYCord` != 0 GROUP BY `x`, `y`, `bssid` ORDER BY x, y ASC" % mapId
         return self.dbr.fetchAsArray(sql, assoc)
 
     def close(self):

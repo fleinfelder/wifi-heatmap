@@ -2,8 +2,6 @@
 
 class dbRequest:
 
-    connection = None
-
     def __init__(self, con):
         self.connection = con
 
@@ -16,10 +14,10 @@ class dbRequest:
         data = cur.fetchall()
         result = []
         if (assoc):
-            dic = {}
             for row in data:
+                dic = {}
                 if row == None:
-                    return
+                    break
                 desc = cur.description
                 for (name, value) in zip(desc, row):
                     dic[name[0]] = value
