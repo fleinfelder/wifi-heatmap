@@ -1,5 +1,6 @@
 import ConfigParser
 import redpinDatabaseReader
+import wifiHeatmap
 import urllib
 import csv
 import sys
@@ -104,8 +105,10 @@ def exportDataToCSV(mapId, fusionFunction):
             count = count + 1
         # for every row in dataset add fused rssi value to dache
         cache[row['bssid']] = row[func]
+    _writeLine(writer, cache)
 
     _closeFile(file)
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
@@ -116,4 +119,7 @@ if __name__ == "__main__":
         fusionFunction = sys.argv[2]
     readRedpinData(mapId)
     exportDataToCSV(mapId, fusionFunction)
+    wh = wifiHeatmap.heatmap(imageFilename, csvFilename)
+    wh.grid_plots(['64:70:02:3e:9f:63', '64:70:02:3e:aa:11', '64:70:02:3e:aa:d9', '64:70:02:3e:aa:ef'])
+    wh.max_plot()
     db.close()
